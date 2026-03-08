@@ -1,0 +1,24 @@
+name: Fetch VPN Data
+on:
+  schedule:
+    - cron: '*/30 * * * *' # 💡 မိနစ် ၃၀ တစ်ခါ အလိုအလျောက် data သွားယူမယ်
+  workflow_dispatch: # 💡 ကိုယ်တိုင် လက်နဲ့ နှိပ်ပြီး ခေါ်လို့လည်းရတယ်
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch Data from VPN Gate
+        run: |
+          curl -L http://www.vpngate.net/api/iphone/ -o vpn_data.txt
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add vpn_data.txt
+          git commit -m "Update VPN Data" || exit 0
+          git push
